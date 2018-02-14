@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.android.app_v12">
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/g3707"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/g3707"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name="com.example.android.rhoe_app_1.LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.example.android.rhoe_app_1.OCRActivity" />
+
+        <meta-data
+            android:name="com.google.android.gms.vicion.DEPENDENCIES"
+            android:value="ocr" />
+
+        <activity android:name="com.example.android.rhoe_app_1.DashboardActivity" />
+        <activity
+            android:name="com.example.android.rhoe_app_1.FineActivity"
+            android:label="@string/title_activity_fine"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name="com.example.android.rhoe_app_1.RegisterActivity" />
+        <activity android:name="com.example.android.rhoe_app_1.FineAdvancedActivity" />
+        <activity android:name="com.example.android.rhoe_app_1.FineCommentsActivity" />
+        <activity android:name="com.example.android.rhoe_app_1.UserListActivity" />
+        <activity android:name="com.example.android.rhoe_app_1.UserEditActicity" />
+        <activity android:name="com.example.android.rhoe_app_1.FineListActivity" />
+        <activity
+            android:name="com.example.android.rhoe_app_1.FineEditActivity"
+            android:label="@string/title_activity_fine_edit"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+    </application>
+
+</manifest>

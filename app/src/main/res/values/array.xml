@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="spinnerViolations">
+        <item>Διάβαση</item>
+        <item>Διπλή Στάθμευση</item>
+        <item>Θέση ΑΜΕΑ</item>
+        <item>Πεζόδρομος</item>
+    </string-array>
+
+    <string-array name="spinnerMunicipality">
+    <item>Δήμος Ευόσμου-Κορδελιού</item>
+    <item>Άλλο</item>
+    </string-array>
+
+    <string-array name="spinnerAccountType">
+        <item>Απλός Χρήστης</item>
+        <item>Διαχειριστής</item>
+    </string-array>
+
+    <string-array name="spinnerCarType">
+        <item>Ι.Χ.</item>
+        <item>Ε.Δ.Χ.</item>
+    </string-array>
+
+    <string-array name="spinnerDriverOwner">
+        <item></item>
+        <item>ΝΑΙ</item>
+        <item>ΟΧΙ</item>
+    </string-array>
+
+</resources>
