@@ -1,4 +1,4 @@
-package com.example.android.app_v12;
+package com.example.android.rhoe_app_1;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

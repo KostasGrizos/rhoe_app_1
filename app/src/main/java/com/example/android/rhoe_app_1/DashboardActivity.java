@@ -13,7 +13,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     private ImageButton ViewUsersButton;
     private ImageButton NewFineButton;
-    private TextView NameText, SurnameText;
+    private TextView NameText, SurnameText, MunicipalityText, MunicipalIDText;
 
 
 
@@ -30,12 +30,16 @@ public class DashboardActivity extends AppCompatActivity {
          */
         NameText = (TextView)findViewById(R.id.txtNameView);
         SurnameText = (TextView)findViewById(R.id.txtSurnameView);
+        MunicipalityText = (TextView)findViewById(R.id.txtMunicipalityView);
+        MunicipalIDText = (TextView)findViewById(R.id.txtMunicipalIDView);
 
         Bundle user = this.getIntent().getExtras();
         final String[] UserPortableData=user.getStringArray("UserPortableData");
 
         NameText.setText(UserPortableData[4]);
         SurnameText.setText(UserPortableData[5]);
+        MunicipalityText.setText(UserPortableData[7]);
+        MunicipalIDText.setText("Κωδικός ΟΤΑ: " + UserPortableData[8]);
 
         ViewUsersButton.setOnClickListener(new View.OnClickListener() {
             @Override

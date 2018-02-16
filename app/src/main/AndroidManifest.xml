@@ -7,6 +7,12 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Zebra-->
+    <!-- <uses-permission android:name="com.symbol.emdk.permission.EMDK" /> -->
+
+
+
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/g3707"
@@ -14,6 +20,9 @@
         android:roundIcon="@mipmap/g3707"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!-- Zebra-->
+        <!-- <uses-library android:name="com.symbol.emdk"/> -->
         <activity android:name="com.example.android.rhoe_app_1.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
