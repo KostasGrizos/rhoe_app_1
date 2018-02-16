@@ -21,7 +21,8 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    /**provided fileTree(include: ['com.symbol.emdk.jar'], dir: '/Users/User/Library/Android/sdk/add-ons/addon-symbol_emdk-symbol-19/libs') compile fileTree(exclude: ['com.symbol.emdk.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs', include: ['*.jar'])*/
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
