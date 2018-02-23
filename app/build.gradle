@@ -18,6 +18,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    //Zebra Files S
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+        //Zebra Files E
+    }
 }
 
 dependencies {
@@ -25,7 +34,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    //noinspection GradleDependency
+    //noinspection GradleCompatible,GradleDependency
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -33,13 +42,10 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:cardview-v7:25.3.1'
 
-
-
-
     //PDF Libray
     compile 'com.github.barteksc:android-pdf-viewer:2.3.0'
 
     //EMDK Zebra
-    //compile fileTree(exclude: ['com.symbol.emdk.jar'],dir: 'ibs', include: ["*.jar"])
-    //provided fileTree(include: ['com.symbol.jar'], dir: '/Users/User/Library/Android/sdk/add-ons/addon-symbol-emdk-v4.0_API-19/Libs')
+    provided fileTree(include: ['com.symbol.emdk.jar'], dir: 'C:\\Users\\User\\AppData\\Local\\Android\\sdk\\add-ons\\addon-symbol-emdk_v4.2_API-19\\libs')
+    compile fileTree(exclude: ['com.symbol.emdk.jar'], dir: 'libs')
 }

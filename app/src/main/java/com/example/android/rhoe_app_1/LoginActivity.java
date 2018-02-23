@@ -62,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
         if((userName.equals("admin")) && (userPassword.equals("kostas"))){
 
             Bundle b = new Bundle();
-            b.putStringArray("UserPortableData", new String[]{"ID:000", "AdminUser", "No Password", "Admin", "Konstandinos", "Grizos", "No Signature", "Rhoe Admin", "RA001"});
+            b.putStringArray("UserPortableData", new String[]{"ID:000", "AdminUser", "No Password", "Admin", "Konstandinos", "Grizos", "No Signature", "Rhoe Admin", "RA001", "0", "0"});
 
             //More Data from UserDB
 
@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         else if (UserLocatorDB(userName) > -1){
             Cursor UserCursor = UserDB.getDataForID(UserLocatorDB(userName));
-            String[] UserPortableData = new String [9];
+            String[] UserPortableData = new String [11];
             while(UserCursor.moveToNext()) {
                 UserPortableData[0] = (UserCursor.getString(0));
                 UserPortableData[1] = (UserCursor.getString(1));
@@ -87,6 +87,8 @@ public class LoginActivity extends AppCompatActivity {
                 UserPortableData[6] = (UserCursor.getString(6));
                 UserPortableData[7] = (UserCursor.getString(7));
                 UserPortableData[8] = (UserCursor.getString(8));
+                UserPortableData[9] = "0";
+                UserPortableData[10] = "0";
             }
             if (userPassword.equals(UserPortableData[2])){
                 Bundle b = new Bundle();
