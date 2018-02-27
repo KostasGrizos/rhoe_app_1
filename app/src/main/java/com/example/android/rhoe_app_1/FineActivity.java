@@ -1,5 +1,6 @@
 package com.example.android.rhoe_app_1;
 
+import android.Manifest;
 import android.content.Intent;
 import android.graphics.Color;
 import android.icu.text.SimpleDateFormat;
@@ -29,7 +30,9 @@ import com.zebra.sdk.printer.ZebraPrinter;
 import com.zebra.sdk.printer.ZebraPrinterFactory;
 import com.zebra.sdk.printer.ZebraPrinterLanguageUnknownException;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 
 public class FineActivity extends AppCompatActivity /*implements LocationListener*/{
@@ -300,7 +303,11 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
                     new Thread(new Runnable() {
                         public void run() {
                             Looper.prepare();
-                            doConnectionTest();
+                            try {
+                                doConnectionTest();
+                            } catch (ConnectionException e) {
+                                e.printStackTrace();
+                            }
                             Looper.loop();
                             Looper.myLooper().quit();
                         }
@@ -442,10 +449,13 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
 
     //Label Printing
 
-    private void doConnectionTest() {
+    private void doConnectionTest() throws ConnectionException {
         printer = connect();
         if (printer != null) {
-            sendTestLabel();
+            storeFormat();
+            printFormat();
+
+            //sendTestLabel();
         } else {
             disconnect();
         }
@@ -542,6 +552,7 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
         byte[] configLabel = null;
         if (printerLanguage == PrinterLanguage.ZPL) {
             configLabel = "^XA^FO17,16^GB379,371,8^FS^FT65,255^A0N,135,134^FDTEST^FS^XZ".getBytes();
+            //configLabel = ""
             //configLabel = "^XA~TA000~JSN^LT0^MNW^MTD^PON^PMN^LH0,0^JMA^PR5,5~SD10^JUS^LRN^CI0^XZ,^XA,MMT,^PW561,^LL1199,^LS0,^FO0,0^GFA,02048,02048,00016,:Z64:,eJzdVTuO2zAQdROkCDZ7OkGVwVMYrAj6Xix4CkEVwRuIlcCCoCbz4UdOlzbCrncfnt78Z/x4/OfPN/CT5M+74VrXD+z5Z+DTZIg3nLqFhq09z5u+FPDlps97NlpPnI4jiQHBQQUI2g6MYicGGJ8ZqQpPO+MDuK6h14siJyfceQpDcM0CQ2380U0IztYK3i3j0vVe+Njx+Zf95s+oBvAf1vuGnfC2vxyYv47xNP9r41t+Xd7ir3VfFgvbshqJL7ESP7ACxMddXs/WqK73LHfEb8D6c1l7/VJ3kBLiJwx9zZKfcx6Kc+D9p/0N+d+p6y/JP9/sR8Ru6ot7P77ytA8W9Rx6+yD/cfKv8H78cjDiZ/8w7e+G/KfuX/KHqT8r6v30Dzc91Q+oPkPf+2f33r8I3X9rAMWvBm9BU/8+/c/8yBDyfurBUf3U4G34rN+B7/9UU/8KuJ9lGvAF9cv0H3fkr1k/6t8Pzk9RfjarR/Mv9aP4xX6U/ire/yNR6Q/Zn59w47dPPZB/Pe1XLfsz+nfR/MShV6vUf+i99LfrT8z/+5j1I/9fu+56k9v8jvlzPL+52+f6z/7DRfOjTW72c+T6l9KOl8x/2F+iD1hA1oPkT33g/auW3z7Dytj5rmY9rv2yrPS7ayv7gecLtxiug+cf1xq2l6ITRbjI5HD75H6Qc9rx08r+0wv3+4tSCrDiibzfl9L4bJjHG8r5oduLs+/xRw043zHnp9wHTN5zCXzTZ12tqXA+x/27ehHFn8lr0GHLDePg4ON85+0eNhzOPY77d3EJOp8rKFPXeX9J6ub9xszrluP0NwvQMJZI3TEmcP/+gIqx3/UpfeqDBWliw+OEv//16/EPIa1IeQ==:4946,^FO96,0^GFA,02304,02304,00036,:Z64:,eJztkrFqG0EQhne1lzuJHKdVEdhCIRsMqSfg4iBgz2JQldaQIsUavYDeICOdUVwYk9KlH0Gly1Wu8QMkbZhwpSEknRODLutTXiGkiH6Y7ufj42eE2GWXXf51WmJFwTLUVb8QhSDmjO56xSGZ4caarnMsQkboZ9qlJhGZJBcy+SXNn4Txo0847josrzJiewdNYQoxjJyr4VL1DPgDwfag66CEJCC8ATeOnEHkrAaJSrWGfYF+v+sEtcpDsDdQl9FnQMTXj8/lAkr7QoR4W45OEP1r7SByRnNyH0a5PEUNE4E46Tq/VNlntt+g8dGnrKi5fHWmFgx2Gn2mXeddzxh/PJuAw6dvhXaf15cvjXwftD+KPkdbn7RvbMsfoebhRtjQ8vnemViEw1DH2WrqfJJcA3q39bGO3KnryyU+E2sRcL3dpyhKYNusmjL6WE98MY0+AOI2znb7h5OARnArZyIHT8gtXS5T0LINeNKGzqdf2DLY8L3O4z5siRf1hVqYUlIIz6nroEm8QY8zlzxwRuSqeZpFSRnncQIfOvfXPd9ny7NGRZ/7n/S1qqpNrwAlmPcEd/tohTlCNFKR0/4gN5dylqZaCY9T4f/GP+6yy/+Q3/0toCA=:4642,^FO96,32^GFA,03840,03840,00060,:Z64:,eJztlLGq3EYUhs/RGWsUGGZlSDEGQRb8AnMbM4W5dxabpPEDuEih5AnkIuBudVeGdWGuXbr0I7h0KXFNSBHIK0y8jQvjbDoVyypndLVpHIi5lTH7g0Azmn9+fTpnBHDUUUcdddRXJH19K72F6rDJvp41exj46jWuaEUX0EMIWfKeeuj5ej/0IQtpmZHT4dZw+Ss/HyVh2Z51AwzrndwJXKOUgvfdVkryBO1xoN2y96oUVUFGlTeHyxTMlXdWhxA2TVsnoLXm1JXWnPa6z7ROeKJp1oogZFbb08QYa6EhcFfeb8D7FqFrCQoU2CApAT+ifaiMJFKImAKBL6ywRaqMrZC9U+4tzm2pDpzrYOQ1Gj7Qqw+Z45dQ2JxfQMx1yp1q7VzJs/XkvVn7RY1QthJyGHlzAfepuq9ylGSgwycxV+Uq/1aklfGS8OB1bdjUVNuawALjUWM1fEzsx8zywMGmWV/lGndHU9AhJaonXut9x7knbfSOvKWA71P7g7LYSM4laiOvMea2oPZGKwjaKXce/mpi7kD7+X42rKgJGt7p+ebpHFfaweUeQ8zNXPazonZWq+Rfb+mXHSDYQe6qpRyY1wu4J6qFqnC9y6HbwePIy8CLDPmrGB4dvOXEm4BNxvpWGjbP7OYp8/bMewGnMVdbtXlJ/AqORxPvL5V/xLyPIq8cea2AhbGL35mXC9lJEJFXWLEwsuRVBOWUO2zDCeeWsb7JWF+n4c+X8/Ab15e9TcNfP+aWunujozGB+eRtc3/CfeUjiRzry321eFH5B1xfbrVzHHNN6kX3QuR8y9EHrws23Oa+IuYa68v9HLY2PHaSYsGbmnNLRyE9f60jLHuveLlHfFn9hLGfZ5GXiM+Rryp/t0gJpER8UvBqS62st6Yg5IW5OXiHcLYZ6mEFsz3zniX0vA9hHtxslwANTf1HT3AWKDa904TDOzCTF4olfIc7Pr+AW+YtJMre+8ob3ErAv7vxiMk25nkr2Ht58P6v+k//OZC5z/Pm/+EVn5n7qahWb67tbUV1Xe9RRx31JegfU8kNnQ==:7E61^PQ1,0,1,Y^XZ".getBytes();
         } else if (printerLanguage == PrinterLanguage.CPCL) {
             String cpclConfigLabel = "! 0 200 200 406 1\r\n" + "ON-FEED IGNORE\r\n" + "BOX 20 20 380 380 8\r\n" + "T 0 6 137 177 TEST\r\n" + "PRINT\r\n";
@@ -559,6 +570,49 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
         });
         DemoSleeper.sleep(1000);
     }
+
+    private void storeFormat() throws ConnectionException {
+        printer.sendFileContents("sdcard/Download/test1.zpl");
+    }
+
+    private void printFormat() throws ConnectionException {
+        String name ="TSONIOTIS";
+        String format = "Z:test1.zpl";
+        Map<Integer, String> vars = new HashMap<Integer, String>();
+        vars.put(1, name);
+        printer.printStoredFormat(format, vars);
+    }
+
+    private void sendFineZebra() {
+        try {
+            byte[] configLabel = getConfigLabel();
+            printerConnection.write(configLabel);
+            setStatus("Sending Data", Color.BLUE);
+            DemoSleeper.sleep(1500);
+            if (printerConnection instanceof BluetoothConnection) {
+                String friendlyName = ((BluetoothConnection) printerConnection).getFriendlyName();
+                setStatus(friendlyName, Color.MAGENTA);
+                DemoSleeper.sleep(500);
+            }
+        } catch (ConnectionException e) {
+            setStatus(e.getMessage(), Color.RED);
+        }
+    }
+
+    private byte[] getConfigFineZebra() {
+        PrinterLanguage printerLanguage = printer.getPrinterControlLanguage();
+
+        byte[] configLabel = null;
+        if (printerLanguage == PrinterLanguage.ZPL) {
+            configLabel = "^XA^FO17,16^GB379,371,8^FS^FT65,255^A0N,135,134^FDTEST^FS^XZ".getBytes();
+        } else if (printerLanguage == PrinterLanguage.CPCL) {
+            String cpclConfigLabel = "! 0 200 200 406 1\r\n" + "ON-FEED IGNORE\r\n" + "BOX 20 20 380 380 8\r\n" + "T 0 6 137 177 TEST\r\n" + "PRINT\r\n";
+            configLabel = cpclConfigLabel.getBytes();
+        }
+        return configLabel;
+    }
+
+
 
 }
 
