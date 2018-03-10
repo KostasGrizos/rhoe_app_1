@@ -1,16 +1,24 @@
 package com.example.android.rhoe_app_1;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.app_v12.R;
-
+import com.example.android.rhoe_app_1.SQLite_Obsolete.UserDatabaseHelper;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -19,12 +27,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText Username;
     private EditText Password;
-    private Button LoginButton;
     private TextView LoginMessage;
     private Button NewUserButton;
+    private Button LoginFirebaseButton;
+    private ProgressDialog progressDialog;
 
-
-
+    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,20 +41,21 @@ public class LoginActivity extends AppCompatActivity {
 
         UserDB = new UserDatabaseHelper(this);
 
+        firebaseAuth = FirebaseAuth.getInstance();
+        progressDialog = new ProgressDialog(this);
+
+        if(firebaseAuth.getCurrentUser() !=null){
+            Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
+            startActivity(intent);
+        }
+
         Username = (EditText)findViewById(R.id.etUserName);
         Password = (EditText)findViewById(R.id.etPassword);
-        LoginButton = (Button)findViewById(R.id.btnLogin);
         LoginMessage = (TextView)findViewById(R.id.tvLoginMessage);
         NewUserButton = (Button)findViewById(R.id.btnRegister);
+        LoginFirebaseButton = (Button)findViewById(R.id.btnLoginFirebase);
 
         LoginMessage.setText("");
-
-        LoginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                validate(Username.getText().toString(), Password.getText().toString());
-            }
-        });
 
         NewUserButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,63 +64,52 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-
+        LoginFirebaseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userLogin();
+            }
+        });
     }
 
-    private void validate(String userName, String userPassword){
-        if((userName.equals("admin")) && (userPassword.equals("kostas"))){
+    //Firebase Login Method
+    private void userLogin(){
+        String email = Username.getText().toString().trim();
+        String password = Password.getText().toString().trim();
 
-            Bundle b = new Bundle();
-            b.putStringArray("UserPortableData", new String[]{"ID:000", "AdminUser", "No Password", "Admin", "Konstandinos", "Grizos", "No Signature", "Rhoe Admin", "RA001", "0", "0"});
-
-            //More Data from UserDB
-
-            Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
-            intent.putExtras(b);
-
-            startActivity(intent);
+        if (TextUtils.isEmpty(email)){
+            //email is empty
+            Toast.makeText(this, "Please enter email", Toast.LENGTH_SHORT).show();
+            return;
         }
-        else if (UserLocatorDB(userName) == -1){
-            LoginMessage.setText("User Not Found");
+        if (TextUtils.isEmpty(password)){
+            //email is empty
+            Toast.makeText(this, "Please enter password", Toast.LENGTH_SHORT).show();
+            return;
         }
-        else if (UserLocatorDB(userName) > -1){
-            Cursor UserCursor = UserDB.getDataForID(UserLocatorDB(userName));
-            String[] UserPortableData = new String [11];
-            while(UserCursor.moveToNext()) {
-                UserPortableData[0] = (UserCursor.getString(0));
-                UserPortableData[1] = (UserCursor.getString(1));
-                UserPortableData[2] = (UserCursor.getString(2));
-                UserPortableData[3] = (UserCursor.getString(3));
-                UserPortableData[4] = (UserCursor.getString(4));
-                UserPortableData[5] = (UserCursor.getString(5));
-                UserPortableData[6] = (UserCursor.getString(6));
-                UserPortableData[7] = (UserCursor.getString(7));
-                UserPortableData[8] = (UserCursor.getString(8));
-                UserPortableData[9] = "0";
-                UserPortableData[10] = "0";
-            }
-            if (userPassword.equals(UserPortableData[2])){
-                Bundle b = new Bundle();
-                b.putStringArray("UserPortableData", UserPortableData);
 
-                //More Data from UserDB
+        progressDialog.setMessage("Logging in...");
+        progressDialog.show();
 
-                Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
-                intent.putExtras(b);
+        firebaseAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        progressDialog.dismiss();
+                        if (task.isSuccessful()){
+                            finish();
+                            Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
+                            startActivity(intent);
+                        }
+                    }
+                });
 
-                startActivity(intent);
-            }
-        }
-        else {
-            LoginMessage.setText("Wrong Username/Password");
-
-        }
     }
 
     private void adminvalidate(String userName, String userPassword){
         if(
                 (userName.equals("admin")) && (userPassword.equals("kostas"))){
-            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+            Intent intent = new Intent(LoginActivity.this, RegisterStep1Activity.class);
             startActivity(intent);
         }else{
             LoginMessage.setText("Admin Access Only");
@@ -119,15 +117,5 @@ public class LoginActivity extends AppCompatActivity {
 
         }
     }
-
-    private int UserLocatorDB(String UN){
-        Cursor data = UserDB.getItemID(UN);
-        int itemID = -1;
-        while(data.moveToNext()) {
-            itemID = data.getInt(0);
-        }
-        return itemID;
-    }
-
 
 }

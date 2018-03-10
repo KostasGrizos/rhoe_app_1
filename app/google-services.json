@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "899775027534",
+    "firebase_url": "https://rhoe-municipal-assistant.firebaseio.com",
+    "project_id": "rhoe-municipal-assistant",
+    "storage_bucket": "rhoe-municipal-assistant.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:899775027534:android:15a2be7a11f27366",
+        "android_client_info": {
+          "package_name": "com.example.android.rhoe_app_1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "899775027534-kqj5puu742kpiqmj8gejpuvnkc3cooes.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.rhoe_app_1",
+            "certificate_hash": "01597dfb24f08cf88025f1994708003fb33a6ed8"
+          }
+        },
+        {
+          "client_id": "899775027534-t483ee8ekbqmc4cphmdg4m7qiupigels.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrb-EOSI56Gtyfp9RT5gemCbmQP_YOLWw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "899775027534-t483ee8ekbqmc4cphmdg4m7qiupigels.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

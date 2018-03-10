@@ -10,77 +10,59 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.android.app_v12.R;
+import com.example.android.rhoe_app_1.FirebaseUsers.UserInfoFirebase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private static final String TAG = "RegisterActivity";
 
-    UserDatabaseHelper UserDB;
-    private EditText UsernameR;
-    private EditText PasswordR;
-    private Spinner TypeR;
-    private EditText FnameR;
-    private EditText LnameR;
-    private EditText SignatureR;
-    private Spinner MunicipalityR;
-    private EditText MIDR;
-    private Button AddNewUserButtonR;
-    private Button CancelButtonR;
+    //UserDatabaseHelper UserDB;
+    //private EditText UsernameR;
+    //private EditText PasswordR;
+    private Spinner TypeReg;
+    private EditText FnameReg;
+    private EditText LnameReg;
+    private EditText SignatureNumReg;
+    private Spinner MunicipalityReg;
+    private EditText MIDReg;
+    private Button FinishReg;
+    private Button GoBackReg;
+
+    private FirebaseAuth firebaseAuth;
+    private DatabaseReference databaseReference;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_register_step_2);
 
-        UsernameR = (EditText) findViewById(R.id.etUsername);
-        PasswordR = (EditText) findViewById(R.id.etPassword);
-        TypeR = (Spinner) findViewById(R.id.spAccountType);
-        FnameR = (EditText) findViewById(R.id.etFirstName);
-        LnameR = (EditText) findViewById(R.id.etLastName);
-        SignatureR = (EditText) findViewById(R.id.etSignature);
-        MunicipalityR = (Spinner) findViewById(R.id.spMunicipality);
-        MIDR = (EditText) findViewById(R.id.etMunicipalID);
+        firebaseAuth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users");
 
-        AddNewUserButtonR = (Button) findViewById(R.id.btnCreateUser);
-        CancelButtonR = (Button) findViewById(R.id.btnReturn);
+        TypeReg = (Spinner) findViewById(R.id.spAccountTypeReg);
+        FnameReg = (EditText) findViewById(R.id.etFirstNameReg);
+        LnameReg = (EditText) findViewById(R.id.etLastNameReg);
+        SignatureNumReg = (EditText) findViewById(R.id.etSignatureNumReg);
+        MunicipalityReg = (Spinner) findViewById(R.id.spMunicipalityReg);
+        MIDReg = (EditText) findViewById(R.id.etMunicipalIDReg);
 
-        UserDB = new UserDatabaseHelper(this);
+        FinishReg = (Button) findViewById(R.id.btnCreateUserReg);
+        GoBackReg = (Button) findViewById(R.id.btnReturnReg);
 
-        AddNewUserButtonR.setOnClickListener(new View.OnClickListener() {
+        FinishReg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String newEntry2 = UsernameR.getText().toString();
-                String newEntry3 = PasswordR.getText().toString();
-                String newEntry4 = TypeR.getSelectedItem().toString();
-                String newEntry5 = FnameR.getText().toString();
-                String newEntry6 = LnameR.getText().toString();
-                String newEntry7 = SignatureR.getText().toString();
-                String newEntry8 = MunicipalityR.getSelectedItem().toString();
-                String newEntry9 = MIDR.getText().toString();
-
-
-                if ((newEntry2.length() != 0) &&
-                        (newEntry3.length() != 0) &&
-                        (newEntry4.length() != 0) &&
-                        (newEntry5.length() != 0) &&
-                        (newEntry6.length() != 0) &&
-                        (newEntry7.length() != 0) &&
-                        (newEntry8.length() != 0) &&
-                        (newEntry9.length() != 0)) {
-                    AddData(newEntry2, newEntry3, newEntry4, newEntry5, newEntry6, newEntry7, newEntry8, newEntry9);
-
-                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                    startActivity(intent);
-
-                } else {
-                    toastMessage("You must complete all the fields!");
-                }
-
+                saveUserInformation();
             }
         });
 
-        CancelButtonR.setOnClickListener(new View.OnClickListener() {
+        GoBackReg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
@@ -90,23 +72,37 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
+    private void saveUserInformation(){
+        String newEntry1 = TypeReg.getSelectedItem().toString();
+        String newEntry2 = FnameReg.getText().toString();
+        String newEntry3 = LnameReg.getText().toString();
+        String newEntry4 = SignatureNumReg.getText().toString();
+        String newEntry5 = MunicipalityReg.getSelectedItem().toString();
+        String newEntry6 = MIDReg.getText().toString();
 
-    public void AddData(String newEntry2,String newEntry3,String newEntry4,String newEntry5,String newEntry6,String newEntry7,String newEntry8,String newEntry9) {
-        boolean insertData = UserDB.addData(newEntry2, newEntry3, newEntry4, newEntry5, newEntry6, newEntry7, newEntry8, newEntry9);
+        if ((newEntry1.length() != 0) &&
+                (newEntry2.length() != 0) &&
+                (newEntry3.length() != 0) &&
+                (newEntry4.length() != 0) &&
+                (newEntry5.length() != 0) &&
+                (newEntry6.length() != 0)) {
 
-        if (insertData) {
-            toastMessage("User Successfully Registered");
+        UserInfoFirebase userInformationFirebase = new UserInfoFirebase(newEntry1, newEntry2, newEntry3, newEntry4, newEntry5, newEntry6);
+
+        FirebaseUser user =firebaseAuth.getCurrentUser();
+
+        databaseReference.child(user.getUid()).setValue(userInformationFirebase);
+
+        Toast.makeText(this, "Information Saved!", Toast.LENGTH_LONG).show();
+
+        firebaseAuth.signOut();
+        finish();
+
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+
         } else {
-            toastMessage("Something went wrong!");
+            Toast.makeText(this, "You must complete all fields", Toast.LENGTH_LONG).show();
         }
-    }
-
-    /**
-     * customizable toast
-     * @param message
-     */
-
-    private void toastMessage(String message){
-        Toast.makeText(this,message, Toast.LENGTH_SHORT).show();
     }
 }

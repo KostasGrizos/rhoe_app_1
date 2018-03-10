@@ -1,4 +1,4 @@
-package com.example.android.rhoe_app_1;
+package com.example.android.rhoe_app_1.SQLite_Obsolete;
 
         import android.content.ContentValues;
         import android.content.Context;

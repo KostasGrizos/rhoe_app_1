@@ -12,6 +12,7 @@ import android.widget.Switch;
 import android.widget.TableLayout;
 
 import com.example.android.app_v12.R;
+import com.example.android.rhoe_app_1.SQLite_Obsolete.FineDatabaseHelper;
 
 public class FineAdvancedActivity extends AppCompatActivity {
 
@@ -25,8 +26,6 @@ public class FineAdvancedActivity extends AppCompatActivity {
     private Switch switchD;
 
     private static final String TAG = "RegisterActivity";
-
-    FineDatabaseHelper FineDB;
 
     private EditText A1, A2, A3, A4, A5, A6;
     private EditText B1, B2, B3, B4, B5, B6;
@@ -49,9 +48,6 @@ public class FineAdvancedActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fine_advanced);
-
-        Bundle user = this.getIntent().getExtras();
-        final String[] UserPortableData=user.getStringArray("UserPortableData");
 
         tableA = (TableLayout) this.findViewById(R.id.tlA);
         switchA = (Switch) this.findViewById(R.id.swA);
@@ -159,9 +155,6 @@ public class FineAdvancedActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Bundle user = new Bundle();
-                user.putStringArray("UserPortableData", UserPortableData);
-
                 //Bundle Construction for tables A, B, C, D
                 Bundle Atable = new Bundle();
                 Atable.putStringArray("Atemp", Atemp);
@@ -178,7 +171,6 @@ public class FineAdvancedActivity extends AppCompatActivity {
 
                 //Intention to go to Fine Activity with new data
                 Intent intent = new Intent(FineAdvancedActivity.this, FineActivity.class);
-                intent.putExtras(user);
                 intent.putExtras(con);
                 intent.putExtras(Atable);
                 intent.putExtras(Btable);
@@ -193,15 +185,12 @@ public class FineAdvancedActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Bundle user = new Bundle();
-                user.putStringArray("UserPortableData", UserPortableData);
-
                 //Bundle Construction for Condition
                 Bundle con1 = new Bundle();
                 con1.putBoolean("Condition1", false);
                 //Intention to go to Fine Activity with new data
                 Intent intent = new Intent(FineAdvancedActivity.this, FineActivity.class);
-                intent.putExtras(user);
+
                 intent.putExtras(con1);
 
             }

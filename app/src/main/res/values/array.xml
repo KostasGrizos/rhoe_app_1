@@ -1,15 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="spinnerViolations">
-        <item>Διάβαση</item>
-        <item>Διπλή Στάθμευση</item>
-        <item>Θέση ΑΜΕΑ</item>
-        <item>Πεζόδρομος</item>
+    <string-array name="autoComplViolations">
+        <item>Μη συμμόρφωση με υποδείξεις τροχονόμου</item>
+        <item>Παραβίαση STOP υποχρεωτικής παραχώρησης προτεραιότητας (Ρ-1, Ρ-2)</item>
+        <item>Παραβίαση απαγορευτικών σημάτων ( Ρ-7, Ρ-8, Ρ-27, Ρ-28, Ρ-29, Ρ-45, Ρ-46, Ρ-64, Ρ-71 και Ρ-72)</item>
+        <item>Παράνομη Στάθμευση (Ρ-39, Ρ-41, Ρ-42, Ρ-43)</item>
+        <item>Περιορισμοί κυκλοφορίας (Ρ-3 εως Ρ-6, Ρ-9 εως Ρ-26, Ρ-30 κλπ)</item>
+        <item>Χώρος ελεγχόμενης στάθμευσης (Ρ-69)</item>
+        <item>Διαγραμμίσεις οδοστρώματος</item>
+        <item>Διαγραμμίσεις οδοστρώματος λοιπές περιπτώσεις</item>
+        <item>Χάραξη διαγραμμισεων χωρίς προδιαγραφές</item>
+        <item>Παραβίαση ερυθρού σηματοδότη</item>
+        <item>Παραβίαση λοιπών διατάξεων, ρυθμίσεων με φωτεινούς σηματοδότες</item>
+        <item>Παραβίαση φωτεινού σηματοδότη από πεζό</item>
+        <item>Παράλειψη ή πλημμελής σήμανση εργασιών που εκτελούνται στις οδούς από εργολάβους</item>
+        <item>Τοποθέτηση ή καταστροφή ή αλλοίωση κλπ πινακίδων σήμανσης, σηματοδοτών ή διαγραμμίσεων</item>
+        <item>Εγκατασταση πινακίδας αφίσας κλπ με δυσμενή επίδραση στην ασφάλεια της κυκλοφορίας</item>
+        <item>Παράνομη ανάρτηση ή επικόλληση διαφημιστικών πινακίδων</item>
+        <item>Αντικανονική συμπεριφορά οδηγών προς τους χρήστες της οδού, οδήγηση χωρίς σύνεση και προσοχή, συμπεριφορά οδηγών που προκαλεί τρόμο και ανησυχία, συμπεριφορά οδηγών που να θέτει σε κίνδυνο την κυκλοφορία</item>
+        <item>Απόρριψη αντικειμένων που παρακωλύουν την κυκλοφορία ή καθιστούν ολισθηρό το οδόστρωμα (διαρροή ή πτώση φορτίου)</item>
+        <item>Απαγόρευση οδήγησης για επίδειξη ικανότητος, εντυπωσιασμό, ανταγωνισμό ή τέλεση αυτοσχεδίων Αγώνων (αυτ/των, μοτοσ/των, μοτ/των)</item>
+        <item>Στάθμευση, οχημάτων εκατέρωθεν οδοστρώματος αυτοκινητοδρόμων ως και εγκατάσταση υπαιθρίων κινητών και ακινήτων καντινών για πώληση διαφόρων ειδών</item>
+        <item>Ανάρμοστη συμπεριφορά οδηγών-απόρριψη αντικειμένων Ζώνες ασφαλείας - μη χρήση σε παιδιά κάτω των 12 ετών στο μπροστινό κάθισμα. - μη χρήση από επιβάτη - μη χρήση από οδηγό.</item>
+        <item>Κράνος δίτροχης μοτοσικλέτας ή μοτοποδηλάτου - μη χρήση από οδηγό ή επιβάτη (δεν έχει βαθμούς Ρ.S. ο παραβάτης επιβάτης)</item>
+    </string-array>
+
+    <string-array name="autoComplViolationPrice">
+        <item>150.00</item>
+        <item>700.00</item>
+        <item>200.00</item>
+        <item>40.00</item>
+        <item>80.00</item>
+        <item>20.00</item>
+        <item>400.00</item>
+        <item>80.00</item>
+        <item>200.00</item>
+        <item>700.00</item>
+        <item>80.00</item>
+        <item>40.00</item>
+        <item>1500.00</item>
+        <item>2000.00</item>
+        <item>2000.00</item>
+        <item>1500.00-10000.00</item>
+        <item>200.00</item>
+        <item>400.00</item>
+        <item>700.00</item>
+        <item>700.00</item>
+        <item>200.00</item>
+        <item>300.00</item>
+        <item>300.00</item>
+    </string-array>
+
+    <string-array name="autoComplViolationType">
+        <item>δ</item>
+        <item>δ</item>
+        <item>δ</item>
+        <item>δ</item>
+        <item>δ</item>
+        <item>δ</item>
+        <item>δ</item>
+        <item>δ</item>
+        <item>δ</item>
+        <item>δ</item>
+        <item>δ</item>
+        <item>δ</item>
+        <item>π</item>
+        <item>π</item>
+        <item>π</item>
+        <item>π</item>
+        <item>δ</item>
+        <item>δ</item>
+        <item>δ</item>
+        <item>δ</item>
+        <item>δ</item>
+        <item>δ</item>
+        <item>δ</item>
+    </string-array>
+
+    <string-array name="autoComplViolationPoints">
+        <item>3</item>
+        <item>9</item>
+        <item>9</item>
+        <item>-</item>
+        <item>5</item>
+        <item>-</item>
+        <item>7</item>
+        <item>3</item>
+        <item>-</item>
+        <item>9</item>
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+        <item>3</item>
+        <item>5</item>
+        <item>9</item>
+        <item>-</item>
+        <item>-</item>
+        <item>5</item>
+        <item>5</item>
     </string-array>
 
     <string-array name="spinnerMunicipality">
-    <item>Δήμος Ευόσμου-Κορδελιού</item>
-    <item>Άλλο</item>
+        <item>Δήμος Βόλβης</item>
+        <item>Δήμος Ευόσμου-Κορδελιού</item>
+        <item>Δήμος Πυλαίας-Χορτιάτη</item>
+        <item>Rhoé Administration</item>
     </string-array>
 
     <string-array name="spinnerAccountType">
@@ -26,6 +124,306 @@
         <item></item>
         <item>ΝΑΙ</item>
         <item>ΟΧΙ</item>
+    </string-array>
+
+    <string-array name="autoComplColor">
+        <item></item>
+        <item>ΝΑΙ</item>
+        <item>ΟΧΙ</item>
+    </string-array>
+
+    <string-array name="asutoComplColorHex">
+        <item></item>
+        <item>ΝΑΙ</item>
+        <item>ΟΧΙ</item>
+    </string-array>
+
+
+    <string-array name="autoComplBrands">
+        <item>Abadal</item>
+        <item>Abarth</item>
+        <item>Abbott-Detroit</item>
+        <item>ABT</item>
+        <item>AC Cars</item>
+        <item>Acura</item>
+        <item>Aixam</item>
+        <item>Alfa Romeo</item>
+        <item>Alpina</item>
+        <item>Alpine</item>
+        <item>Alta</item>
+        <item>Alvis</item>
+        <item>AMC</item>
+        <item>AMG</item>
+        <item>Arash</item>
+        <item>Ariel</item>
+        <item>ARO</item>
+        <item>Arrinera</item>
+        <item>Artega</item>
+        <item>Ascari</item>
+        <item>Aston Martin</item>
+        <item>Atalanta</item>
+        <item>Auburn</item>
+        <item>Audi</item>
+        <item>Austin</item>
+        <item>Autobacs</item>
+        <item>Autobianchi</item>
+        <item>Axon</item>
+        <item>BAC</item>
+        <item>Baojun</item>
+        <item>BAIC Motor</item>
+        <item>Bentley</item>
+        <item>Berkeley</item>
+        <item>Berliet</item>
+        <item>Bertone</item>
+        <item>Bitter</item>
+        <item>Bizzarrini</item>
+        <item>BMW</item>
+        <item>Borgward</item>
+        <item>Bowler</item>
+        <item>Brabus</item>
+        <item>Brammo</item>
+        <item>Brilliance</item>
+        <item>Bristol</item>
+        <item>Brooke</item>
+        <item>Bufori</item>
+        <item>Bugatti</item>
+        <item>Buick</item>
+        <item>BYD</item>
+        <item>Cadillac</item>
+        <item>Carlsson</item>
+        <item>Caparo</item>
+        <item>Caterham</item>
+        <item>Changan</item>
+        <item>Changfeng</item>
+        <item>Chery</item>
+        <item>Chevrolet</item>
+        <item>Chrysler</item>
+        <item>Cisitalia</item>
+        <item>Citroën</item>
+        <item>Cizeta</item>
+        <item>Cole</item>
+        <item>Corre La Licorne</item>
+        <item>Corvette</item>
+        <item>Dacia</item>
+        <item>Daewoo</item>
+        <item>Daihatsu</item>
+        <item>Dartz</item>
+        <item>Datsun</item>
+        <item>David Brown</item>
+        <item>Delage</item>
+        <item>DMC</item>
+        <item>De Tomaso</item>
+        <item>Detroit Electric</item>
+        <item>Devel Sixteen</item>
+        <item>Diatto</item>
+        <item>DINA</item>
+        <item>DKW</item>
+        <item>Dodge</item>
+        <item>Dongfeng</item>
+        <item>Donkervoort</item>
+        <item>DS</item>
+        <item>GAC Group</item>
+        <item>Gardner Douglas</item>
+        <item>GAZ</item>
+        <item>Geely</item>
+        <item>General Motors</item>
+        <item>Genesis</item>
+        <item>Geo</item>
+        <item>Gilbern</item>
+        <item>Gillet</item>
+        <item>Ginetta</item>
+        <item>GMC</item>
+        <item>Gonow</item>
+        <item>Great Wall</item>
+        <item>Grinnall</item>
+        <item>GTA Motor</item>
+        <item>GT-R</item>
+        <item>Gumpert</item>
+        <item>Hafei</item>
+        <item>Haima</item>
+        <item>Haval</item>
+        <item>Hawtai</item>
+        <item>Hennessey</item>
+        <item>Hillman</item>
+        <item>Hindustan Motors</item>
+        <item>Hino</item>
+        <item>Hispano-Suiza</item>
+        <item>HSV</item>
+        <item>Holden</item>
+        <item>Hommell</item>
+        <item>Honda</item>
+        <item>Horch</item>
+        <item>Hudson</item>
+        <item>Hummer</item>
+        <item>Hupmobile</item>
+        <item>Hyundai</item>
+        <item>Infiniti</item>
+        <item>Innocenti</item>
+        <item>Intermeccanica</item>
+        <item>IKCO</item>
+        <item>Isdera</item>
+        <item>Iso Rivolta</item>
+        <item>Isuzu</item>
+        <item>Iveco</item>
+        <item>JAC Motors</item>
+        <item>Jaguar</item>
+        <item>Jawa</item>
+        <item>JBA Motors</item>
+        <item>Jeep</item>
+        <item>Jensen</item>
+        <item>JMC</item>
+        <item>Kaiser</item>
+        <item>Karma</item>
+        <item>Keating</item>
+        <item>Kenworth</item>
+        <item>KIA</item>
+        <item>Koenigsegg</item>
+        <item>KTM</item>
+        <item>Lada</item>
+        <item>Lagonda</item>
+        <item>Lamborghini</item>
+        <item>Lancia</item>
+        <item>Land Rover</item>
+        <item>Landwind</item>
+        <item>Laraki</item>
+        <item>LEVC</item>
+        <item>Lexus</item>
+        <item>Leyland</item>
+        <item>Lifan</item>
+        <item>Ligier</item>
+        <item>Lincoln</item>
+        <item>Lister</item>
+        <item>Lloyd</item>
+        <item>Lobini</item>
+        <item>Lotus</item>
+        <item>Luxgen</item>
+        <item>Mack</item>
+        <item>Mahindra</item>
+        <item>MAN</item>
+        <item>Marcos</item>
+        <item>Marlin</item>
+        <item>Maserati</item>
+        <item>Mastretta</item>
+        <item>Maxus</item>
+        <item>Maybach</item>
+        <item>Mazda</item>
+        <item>Mazzanti</item>
+        <item>M BMW</item>
+        <item>McLaren</item>
+        <item>Melkus</item>
+        <item>Mercedes-Benz</item>
+        <item>Mercury</item>
+        <item>Merkur</item>
+        <item>MEV</item>
+        <item>MG</item>
+        <item>Microcar</item>
+        <item>Mini</item>
+        <item>Mitsubishi</item>
+        <item>Mitsuoka</item>
+        <item>MK</item>
+        <item>Morgan</item>
+        <item>Morris</item>
+        <item>Mosler</item>
+        <item>Mustang</item>
+        <item>Nissan</item>
+        <item>Noble</item>
+        <item>Oldsmobile</item>
+        <item>Oltcit</item>
+        <item>Opel</item>
+        <item>OSCA</item>
+        <item>Pagani</item>
+        <item>Panhard</item>
+        <item>Pegaso</item>
+        <item>Perodua</item>
+        <item>Peterbilt</item>
+        <item>Peugeot</item>
+        <item>PGO</item>
+        <item>Pierce-Arrow</item>
+        <item>Pininfarina</item>
+        <item>Plymouth</item>
+        <item>Polestar</item>
+        <item>Pontiac</item>
+        <item>Porsche</item>
+        <item>Praga</item>
+        <item>Premier</item>
+        <item>Prodrive</item>
+        <item>Proton</item>
+        <item>Qoros</item>
+        <item>Radical</item>
+        <item>Rambler</item>
+        <item>RAM</item>
+        <item>Ranz</item>
+        <item>Renault</item>
+        <item>Renault Samsung</item>
+        <item>Rezvani</item>
+        <item>Riley</item>
+        <item>Rimac</item>
+        <item>Rinspeed</item>
+        <item>Roewe</item>
+        <item>Rolls-Royce</item>
+        <item>Ronart</item>
+        <item>Rossion</item>
+        <item>Rover</item>
+        <item>RUF</item>
+        <item>Saab</item>
+        <item>SAIC</item>
+        <item>Saipa</item>
+        <item>Saleen</item>
+        <item>Saturn</item>
+        <item>Scion</item>
+        <item>SEAT</item>
+        <item>Shelby</item>
+        <item>Simca</item>
+        <item>Singer</item>
+        <item>Škoda</item>
+        <item>Smart</item>
+        <item>Soueast</item>
+        <item>Spirra</item>
+        <item>Spyker</item>
+        <item>SRT</item>
+        <item>SsangYong</item>
+        <item>SSC</item>
+        <item>Studebaker</item>
+        <item>Subaru</item>
+        <item>Suffolk</item>
+        <item>Suzuki</item>
+        <item>Talbot</item>
+        <item>Tata</item>
+        <item>Tatra</item>
+        <item>Tauro Sport Auto</item>
+        <item>TechArt</item>
+        <item>Tesla</item>
+        <item>Toyota</item>
+        <item>Tramontana</item>
+        <item>Trion</item>
+        <item>Triumph</item>
+        <item>Troller</item>
+        <item>TVR</item>
+        <item>UAZ</item>
+        <item>Ultima</item>
+        <item>Vandenbrink</item>
+        <item>Vauxhall</item>
+        <item>Vencer</item>
+        <item>Vector Motors</item>
+        <item>Venturi</item>
+        <item>Venucia</item>
+        <item>Viper</item>
+        <item>Volkswagen</item>
+        <item>Volvo</item>
+        <item>Wanderer</item>
+        <item>Wartburg</item>
+        <item>Western Star</item>
+        <item>Westfield</item>
+        <item>Wiesmann</item>
+        <item>Willys</item>
+        <item>W Motors</item>
+        <item>Wuling</item>
+        <item>Yulon</item>
+        <item>Zastava</item>
+        <item>ZAZ</item>
+        <item>Zenos</item>
+        <item>Zenvo</item>
+        <item>Zotye</item>
     </string-array>
 
 </resources>

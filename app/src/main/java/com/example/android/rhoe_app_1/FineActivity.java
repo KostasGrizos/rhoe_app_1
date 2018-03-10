@@ -1,17 +1,34 @@
 package com.example.android.rhoe_app_1;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.icu.util.TimeZone;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.Html;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -20,8 +37,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.app_v12.R;
+import com.example.android.rhoe_app_1.FirebaseFine.FineAInfoFirebase;
+import com.example.android.rhoe_app_1.FirebaseFine.FineBInfoFirebase;
+import com.example.android.rhoe_app_1.FirebaseFine.FineBasicInfoFirebase;
+import com.example.android.rhoe_app_1.FirebaseFine.FineCInfoFirebase;
+import com.example.android.rhoe_app_1.FirebaseFine.FineDInfoFirebase;
+import com.example.android.rhoe_app_1.FirebaseUsers.RetrieveUserInfoFirebase;
 import com.example.android.rhoe_app_1.Zebra.DemoSleeper;
 import com.example.android.rhoe_app_1.Zebra.SettingsHelper;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.zebra.sdk.comm.BluetoothConnection;
 import com.zebra.sdk.comm.Connection;
 import com.zebra.sdk.comm.ConnectionException;
@@ -30,15 +60,27 @@ import com.zebra.sdk.printer.ZebraPrinter;
 import com.zebra.sdk.printer.ZebraPrinterFactory;
 import com.zebra.sdk.printer.ZebraPrinterLanguageUnknownException;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 
-public class FineActivity extends AppCompatActivity /*implements LocationListener*/{
+public class FineActivity extends AppCompatActivity implements LocationListener {
 
-    FineDatabaseHelper FineDB;
+    DatabaseReference databaseReference;
+    DatabaseReference userDatabaseReference;
+    private FirebaseAuth firebaseAuth;
+    private String userID;
+    private String MunicipalityIndex;
 
+    private ImageButton FineInfoButton;
+    private ImageButton FineClearButton;
     private ImageButton OCRButton;
     private ImageButton TimeStampButton;
     private Button FineAdvancedButton;
@@ -47,14 +89,15 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
 
     private EditText PlateEditText;
     private Spinner TypeEditText;
-    private EditText BrandEditText;
     private EditText ColorEditText;
     private EditText DateEditText;
-    private String FineAmountEditText;
     private EditText DayEditText;
     private EditText TimeEditText;
     private EditText AddressEditText;
-    private Spinner FineTypeEditText;
+    private AutoCompleteTextView FineTypeAutoCompl;
+    private AutoCompleteTextView BrandAutoCompl;
+    private EditText FineAmountEditText;
+    private EditText FinePointsEditText;
 
     private TextView ConnectivityStatusFineTextView;
 
@@ -64,6 +107,9 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
     Calendar calendar;
     SimpleDateFormat simpleDateFormat;
     String Date;
+
+    SimpleDateFormat simpleDateFirebaseFormat;
+    String DateFirebase;
 
     SimpleDateFormat simpleTimeFormat;
     String Time;
@@ -79,27 +125,33 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
     final int MY_PERMISSION_REQUEST_CODE = 7171;
     double lat, lng;
 
-    private String[] FineBasic = new String[10];
+    private String[] FineType;
+    private String[] FineAmount;
+    private String[] FinePoints;
+    private String[] CarBrand;
 
+    private String[] FineBasic = new String[10];
     private String[] A = new String[6];
     private String[] B = new String[6];
     private String[] C = new String[8];
     private String[] D = new String[5];
+    //private String[] FineBasicPortable = new String[7];
 
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        /* Former Location Processing - Obsolete
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
 
             return;
         }
-        locationManager.requestLocationUpdates(provider, 400, 1, this);*/
+        locationManager.requestLocationUpdates(provider, 2400, 1, this);
+
+
     }
-    /* Former Location Processing - Obsolete
+
+    // Former Location Processing - Obsolete
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -109,8 +161,9 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
                 break;
 
         }
-    }*/
+    }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,12 +171,31 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FineDB = new FineDatabaseHelper(this);
+        //Firebase Auth and Database
+        firebaseAuth = FirebaseAuth.getInstance();
+        if(firebaseAuth.getCurrentUser() ==null){
+            //profile activity
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        }
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseUser user =firebaseAuth.getCurrentUser();
+        userID = user.getUid();
+        userDatabaseReference = FirebaseDatabase.getInstance().getReference("Users");
+        userDatabaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                showData(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         //Imported Bundles
-        final Bundle user = this.getIntent().getExtras();
-        final String[] UserPortableData = user.getStringArray("UserPortableData");
-        Bundle con = this.getIntent().getExtras();
+        final Bundle con = this.getIntent().getExtras();
         final boolean Condition = con.getBoolean("Condition");
         Bundle con1 = this.getIntent().getExtras();
         final boolean Condition1 = con1.getBoolean("Condition1");
@@ -154,45 +226,77 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
 
         ConnectivityStatusFineTextView =(TextView) findViewById(R.id.tvConnectivityStatusFine);
 
-        /*
-         * OCR and Timestamp Buttons
-         */
-
+        FineInfoButton = (ImageButton) findViewById(R.id.btnFineInfo);
+        FineClearButton = (ImageButton) findViewById(R.id.btnFineClear);
         OCRButton = (ImageButton) findViewById(R.id.btnOCR);
         TimeStampButton = (ImageButton) findViewById(R.id.btnTimestamp);
 
-
         PlateEditText = (EditText)findViewById(R.id.etLiscencePlate);
         TypeEditText = (Spinner)findViewById(R.id.spCarType);
-        BrandEditText = (EditText)findViewById(R.id.etBrand);
         ColorEditText = (EditText)findViewById(R.id.etColor);
         DateEditText = (EditText)findViewById(R.id.etDate);
 
         DayEditText = (EditText)findViewById(R.id.etDay);
         TimeEditText = (EditText)findViewById(R.id.etTime);
         AddressEditText = (EditText)findViewById(R.id.etAddress);
-        FineTypeEditText = (Spinner) findViewById(R.id.spViolation);
 
+        FineTypeAutoCompl = (AutoCompleteTextView) findViewById(R.id.acViolation);
+        FineType = getResources().getStringArray(R.array.autoComplViolations);
+        ArrayAdapter<String> adapterType = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, FineType);
+        FineTypeAutoCompl.setAdapter(adapterType);
 
+        FineAmountEditText = (EditText) findViewById(R.id.etFineAmmount);
+        FineAmount = getResources().getStringArray(R.array.autoComplViolationPrice);
+        ArrayAdapter<String> adapterAmount = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, FineAmount);
 
+        FinePointsEditText = (EditText) findViewById(R.id.etPoints);
+        FinePoints = getResources().getStringArray(R.array.autoComplViolationPoints);
+        ArrayAdapter<String> adapterPoints = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, FinePoints);
 
+        FineTypeAutoCompl.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-        calendar = Calendar.getInstance();
-        simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+2"));
-        Date = simpleDateFormat.format(calendar.getTime());
+            }
 
-        simpleTimeFormat = new SimpleDateFormat("HH:mm");
-        simpleTimeFormat.setTimeZone(TimeZone.getTimeZone("GMT+2"));
-        Time = simpleTimeFormat.format(calendar.getTime());
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (Arrays.asList(FineType).indexOf(FineTypeAutoCompl.getText().toString())>= 0) {
+                    FineAmountEditText.setText(FineAmount[Arrays.asList(FineType).indexOf(FineTypeAutoCompl.getText().toString())]);
+                    FinePointsEditText.setText(FinePoints[Arrays.asList(FineType).indexOf(FineTypeAutoCompl.getText().toString())]);
+                }
+            }
 
-        Locale locale = new Locale("el-GR");
-        simpleDayFormat = new SimpleDateFormat("EEEE", locale);
-        simpleDayFormat.setTimeZone(TimeZone.getTimeZone("GMT+2"));
-        Day = simpleDayFormat.format(calendar.getTime());
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        BrandAutoCompl = (AutoCompleteTextView) findViewById(R.id.acBrand);
+        CarBrand = getResources().getStringArray(R.array.autoComplBrands);
+        ArrayAdapter<String> adapterBrand = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, CarBrand);
+        BrandAutoCompl.setAdapter(adapterBrand);
+
 
         LocationEditText = (EditText) findViewById(R.id.etAddress);
 
+        FineInfoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showFineDetails(FineActivity.this);
+            }
+        });
+
+        FineClearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FineTypeAutoCompl.setText("");
+                FineAmountEditText.setText("");
+                FinePointsEditText.setText("");
+
+            }
+        });
 
         OCRButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,7 +306,6 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
             }
         });
 
-        /* Former Location Processing - Obsolete
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this, new String[]{
@@ -213,17 +316,35 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
         } else {
             getLocation();
         }
-        */
+
 
 
         TimeStampButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                calendar = Calendar.getInstance();
+                simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+2"));
+                Date = simpleDateFormat.format(calendar.getTime());
+
+                simpleDateFirebaseFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SSSZ");
+                simpleDateFirebaseFormat.setTimeZone(TimeZone.getTimeZone("GMT+2"));
+                DateFirebase = simpleDateFirebaseFormat.format(calendar.getTime());
+
+                simpleTimeFormat = new SimpleDateFormat("HH:mm");
+                simpleTimeFormat.setTimeZone(TimeZone.getTimeZone("GMT+2"));
+                Time = simpleTimeFormat.format(calendar.getTime());
+
+                Locale locale = new Locale("el-GR");
+                simpleDayFormat = new SimpleDateFormat("EEEE", locale);
+                simpleDayFormat.setTimeZone(TimeZone.getTimeZone("GMT+2"));
+                Day = simpleDayFormat.format(calendar.getTime());
+
                 DateEditText.setText(Date);
                 TimeEditText.setText(Time);
                 DayEditText.setText(Day);
 
-                /* Former Location Processing - Obsolete
+                // Former Location Processing - Obsolete
                 if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
                     return;
@@ -231,7 +352,7 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
                 Location myLocation = locationManager.getLastKnownLocation(provider);
                 lat = myLocation.getLatitude();
                 lng = myLocation.getLongitude();
-                new GetAddress().execute(String.format("%.4f,%.4f",lat,lng));*/
+                new GetAddress().execute(String.format("%.4f,%.4f",lat,lng));
             }
         });
 
@@ -250,9 +371,8 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
         FineAdvancedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                //FineBasicPortable String[] =
                 Intent intent = new Intent(FineActivity.this, FineAdvancedActivity.class);
-                intent.putExtras(user);
                 startActivity(intent);
             }
         });
@@ -261,31 +381,19 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
             @Override
             public void onClick(View view) {
 
-                if(FineTypeEditText.getSelectedItem().toString()=="Διάβαση") {
-                    FineAmountEditText = "40";
-                }
-                else if(FineTypeEditText.getSelectedItem().toString()=="Διπλή Στάθμευση") {
-                    FineAmountEditText = "80";
-                }
-                else if(FineTypeEditText.getSelectedItem().toString()=="Θέση ΑΜΕΑ") {
-                    FineAmountEditText = "100";
-                }
-                else if(FineTypeEditText.getSelectedItem().toString()=="Πεζόδρομος") {
-                    FineAmountEditText = "120";
-                }
 
 
 
                 FineBasic = new String[]{PlateEditText.getText().toString(),
                         TypeEditText.getSelectedItem().toString(),
-                        BrandEditText.getText().toString(),
+                        BrandAutoCompl.getText().toString(),
                         ColorEditText.getText().toString(),
                         DateEditText.getText().toString(),
-                        FineAmountEditText,
+                        FineAmountEditText.getText().toString(),
                         DayEditText.getText().toString(),
                         TimeEditText.getText().toString(),
                         AddressEditText.getText().toString(),
-                        FineTypeEditText.getSelectedItem().toString()
+                        FineTypeAutoCompl.getText().toString()
                 };
 
 
@@ -294,12 +402,45 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
                         (FineBasic[2].length() != 0) &&
                         (FineBasic[3].length() != 0) &&
                         (FineBasic[4].length() != 0) &&
+                        (FineBasic[5].length() != 0) &&
                         (FineBasic[6].length() != 0) &&
                         (FineBasic[7].length() != 0) &&
                         (FineBasic[8].length() != 0) &&
-                        (FineBasic[9].length() != 0)) {
-                    AddData(UserPortableData, FineBasic, A, B, C, D);
+                        (FineBasic[9].length() != 0) &&
+                        DateFirebase != null) {
 
+                    FirebaseUser userFirebase =firebaseAuth.getCurrentUser();
+
+                    FineBasicInfoFirebase fineBasicInfoFirebase = new FineBasicInfoFirebase(FineBasic[0],
+                            FineBasic[1],
+                            FineBasic[2],
+                            FineBasic[3],
+                            FineBasic[4],
+                            FineBasic[5],
+                            FineBasic[6],
+                            FineBasic[7],
+                            FineBasic[8],
+                            FineBasic[9],
+                            userFirebase.getUid());
+
+                    databaseReference.child(DateFirebase).child("Basic Fine").setValue(fineBasicInfoFirebase);
+
+                    if (Condition) {
+
+                    } else {
+                        FineAInfoFirebase fineAInfoFirebase = new FineAInfoFirebase(A[0], A[1], A[2], A[3], A[4], A[5]);
+                        FineBInfoFirebase fineBInfoFirebase = new FineBInfoFirebase(B[0], B[1], B[2], B[3], B[4], B[5]);
+                        FineCInfoFirebase fineCInfoFirebase = new FineCInfoFirebase(C[0], C[1], C[2], C[3], C[4], C[5], C[6], C[7]);
+                        FineDInfoFirebase fineDInfoFirebase = new FineDInfoFirebase(D[0], C[1], C[2], C[3], C[4]);
+
+                        databaseReference.child(DateFirebase).child("Fine A").setValue(fineAInfoFirebase);
+                        databaseReference.child(DateFirebase).child("Fine B").setValue(fineBInfoFirebase);
+                        databaseReference.child(DateFirebase).child("Fine C").setValue(fineCInfoFirebase);
+                        databaseReference.child(DateFirebase).child("Fine D").setValue(fineDInfoFirebase);
+                    }
+
+                    //Printer
+                    /*
                     new Thread(new Runnable() {
                         public void run() {
                             Looper.prepare();
@@ -311,51 +452,47 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
                             Looper.loop();
                             Looper.myLooper().quit();
                         }
-                    }).start();
-
-                    Bundle user = new Bundle();
-                    user.putStringArray("UserPortableData", UserPortableData);
+                    }).start();*/
 
                     Intent intent = new Intent(FineActivity.this, DashboardActivity.class);
-                    intent.putExtras(user);
-
                     startActivity(intent);
-
 
                 } else {
                     toastMessage("You must complete all the fields!");
                 }
             }
         });
-
-
     }
-    public void AddData(String[] User,
-                        String[] FineBasic,
-                        String[] A,
-                        String[] B,
-                        String[] C,
-                        String[] D) {
-        boolean insertData = FineDB.addDataFine(User, FineBasic, A, B, C, D);
 
-        if (insertData) {
-            toastMessage("Fine Successfully Submitted");
-        } else {
-            toastMessage("Something went wrong!");
+    public void showFineDetails(FineActivity view) {
+        AlertDialog.Builder myAlert = new AlertDialog.Builder(this);
+        myAlert.setMessage(Html.fromHtml("<b>Περιγραφή Παράβασης:</b>" + FineTypeAutoCompl.getText().toString() + "\n" +
+                "<b>Χρηματικό πρόστιμο:</b>" + FineAmountEditText.getText().toString() + "\n" +
+                "<b>Βαθμοί Σ.Ε.Σ.Ο.:</b>" + FinePointsEditText.getText().toString() + "\n" +
+                "<b>Αφαίρεση ΣΚ</b>" + "" + "\n")).create();
+        myAlert.show();
+    }
+
+    private void showData (DataSnapshot dataSnapshot) {
+        for (DataSnapshot ds : dataSnapshot.getChildren()){
+            RetrieveUserInfoFirebase RUInfo = new RetrieveUserInfoFirebase();
+            RUInfo.setFname(dataSnapshot.child(userID).getValue(RetrieveUserInfoFirebase.class).getFname());
+            RUInfo.setLname(dataSnapshot.child(userID).getValue(RetrieveUserInfoFirebase.class).getLname());
+            RUInfo.setMID(dataSnapshot.child(userID).getValue(RetrieveUserInfoFirebase.class).getMID());
+            RUInfo.setMunicipality(dataSnapshot.child(userID).getValue(RetrieveUserInfoFirebase.class).getMunicipality());
+            RUInfo.setSignatureNum(dataSnapshot.child(userID).getValue(RetrieveUserInfoFirebase.class).getSignatureNum());
+            RUInfo.setType(dataSnapshot.child(userID).getValue(RetrieveUserInfoFirebase.class).getType());
+
+            MunicipalityIndex = RUInfo.getMunicipality();
+            databaseReference= FirebaseDatabase.getInstance().getReference("Fines").child(MunicipalityIndex);
         }
     }
-
-    /**
-     * customizable toast
-     * @param message
-     */
 
     private void toastMessage(String message){
         Toast.makeText(this,message, Toast.LENGTH_SHORT).show();
     }
 
-    /*
-     * Former Location Processing - Obsolete
+    //Former Location Processing - Obsolete
 
     private void getLocation() {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -374,14 +511,11 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
 
     @Override
     public void onLocationChanged(Location location) {
-
         lat = location.getLatitude();
         lng = location.getLongitude();
 
-        new GetAddress().execute(String.format("%.4f.%.4f",lat,lng));
-
+        new GetAddress().execute(String.format("%.4f,%.4f",lat,lng));
     }
-
 
     @Override
     public void onStatusChanged(String s, int i, Bundle bundle) {
@@ -417,7 +551,8 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
                 double lng = Double.parseDouble(strings[0].split(",")[1]);
                 String response;
                 HttpDataHandler http = new HttpDataHandler();
-                String url = String.format("https://maps.googleapis.com/maps/api/geocode/json?latlng=%.4f,%.4f&sensor=false",lat,lng);
+                String url = String.format("https://maps.googleapis.com/maps/api/geocode/json?latlng=%.4f,%.4f&sensor=false&language=el",lat,lng);
+                //String url = String.format("https://maps.googleapis.com/maps/api/geocode/json?latlng=%.4f,%.4f&sensor=false",lat,lng);
                 response = http.GetHTTPData(url);
                 return response;
             }
@@ -445,7 +580,6 @@ public class FineActivity extends AppCompatActivity /*implements LocationListene
                 dialog.dismiss();
         }
     }
-    */
 
     //Label Printing
 

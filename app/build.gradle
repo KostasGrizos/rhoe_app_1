@@ -38,9 +38,15 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.google.android.gms:play-services-vision:9.8.0'
+    //noinspection GradleCompatible
+    compile 'com.google.android.gms:play-services-vision:11.8.0'
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:cardview-v7:25.3.1'
+
+    //Firebase
+    compile 'com.google.firebase:firebase-core:11.8.0'
+    compile 'com.google.firebase:firebase-auth:11.8.0'
+    compile 'com.google.firebase:firebase-database:11.8.0'
 
     //PDF Libray
     compile 'com.github.barteksc:android-pdf-viewer:2.3.0'
@@ -49,3 +55,6 @@ dependencies {
     provided fileTree(include: ['com.symbol.emdk.jar'], dir: 'C:\\Users\\User\\AppData\\Local\\Android\\sdk\\add-ons\\addon-symbol-emdk_v4.2_API-19\\libs')
     compile fileTree(exclude: ['com.symbol.emdk.jar'], dir: 'libs')
 }
+
+//Firebase
+apply plugin: 'com.google.gms.google-services'
